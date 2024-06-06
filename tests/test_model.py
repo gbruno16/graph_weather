@@ -16,7 +16,7 @@ from graph_weather.models.gencast.utils.noise import (
     generate_isotropic_noise,
     sample_noise_level,
 )
-
+from graph_weather.models.gencast.graph.graph_builder import GraphBuilder
 
 def test_encoder():
     lat_lons = []
@@ -235,6 +235,16 @@ def test_normalized_loss():
     assert torch.isclose(loss, criterion.weights.expand_as(out.mean(-1)).mean())
 
 
+def test_meta_model():
+    model = MetaModel(image_size=100, patch_size=10, depth=1, heads=1, mlp_dim=7, channels=3)
+    features = torch.randn((1, 3, 100, 100))
+
+    out = model(features)
+    assert not torch.isnan(out).any()
+    assert not torch.isnan(out).any()
+    assert out.size() == (1, 3, 100, 100)
+
+
 def test_gencast_noise():
     num_lat = 32
     num_samples = 5
@@ -245,12 +255,14 @@ def test_gencast_noise():
     assert corrupted_residuals.shape == target_residuals.shape
     assert not np.isnan(corrupted_residuals).any()
 
+def test_gencast_graph():
+    grid_lat = np.arange(-90, 90, 1)
+    grid_lon = np.arange(0, 360, 1)
+    graphs = GraphBuilder(grid_lon=grid_lon, grid_lat=grid_lat, splits=0, num_hops=1)
 
-def test_meta_model():
-    model = MetaModel(image_size=100, patch_size=10, depth=1, heads=1, mlp_dim=7, channels=3)
-    features = torch.randn((1, 3, 100, 100))
-
-    out = model(features)
-    assert not torch.isnan(out).any()
-    assert not torch.isnan(out).any()
-    assert out.size() == (1, 3, 100, 100)
+    assert graphs.mesh_graph.x.shape[0] == 12
+    assert graphs.g2m_graph["grid_nodes"].x.shape[0] == 360*180
+    assert graphs.m2g_graph["mesh_nodes"].x.shape[0] == 12
+    assert not torch.isnan(graphs.mesh_graph.edge_attr).any()
+    assert graphs.khop_mesh_graph.x.shape[0] == 12
+    assert graphs.khop_mesh_graph.edge_attr.shape[0] == 12*10
