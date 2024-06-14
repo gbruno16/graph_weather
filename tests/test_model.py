@@ -18,6 +18,7 @@ from graph_weather.models.gencast.utils.noise import (
     sample_noise_level,
 )
 from graph_weather.models.gencast import GraphBuilder, WeightedMSELoss, Denoiser
+from graph_weather.models.gencast.layers.modules import FourierEmbedding
 
 def test_encoder():
     lat_lons = []
@@ -321,3 +322,10 @@ def test_gencast_denoiser():
                          noise_levels=noise_levels)
     
     assert not torch.isnan(preds).any()
+
+def test_gencast_fourier():
+    batch_size = 10
+    output_dim = 20
+    fourier_embedder = FourierEmbedding(output_dim=output_dim, num_frequencies=32, base_period=16)
+    t = torch.rand((batch_size,1))
+    assert fourier_embedder(t).shape ==(batch_size, output_dim)
