@@ -64,7 +64,7 @@ jobs:
           echo "PYTESTCOV=$PYTESTCOV" >> $GITHUB_ENV
       - name: Run pytest
         run: |
-          export PYTEST_COMMAND="pytest $PYTESTCOV $PYTESTXDIST -s"
+          export PYTEST_COMMAND="pytest $PYTESTCOV $PYTESTXDIST -s --tb=long "
           echo "Will be running this command: $PYTEST_COMMAND"
           eval $PYTEST_COMMAND
       - name: "Upload coverage to Codecov"
