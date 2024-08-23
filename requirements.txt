@@ -9,4 +9,4 @@ rtree
 xarray
 setuptools
 zarr
-gcsfs
+pydantic
