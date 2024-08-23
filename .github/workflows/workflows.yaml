@@ -52,6 +52,7 @@ jobs:
         run: |
           # let make pytest run with coverage
           echo "Will be looking at coverage of dir  graph_weather"
+          python3 -c 'import dgl'
           #
           # install pytest-cov
           pip install coverage==7.4.3
