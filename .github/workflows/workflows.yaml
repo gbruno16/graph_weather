@@ -13,10 +13,12 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: ["3.10", "3.11", "3.12"]
-        torch-version: [2.3.0]
+        torch-version: [2.3.0, 2.4.0]
         include:
           - torch-version: 2.3.0
             torchvision-version: 0.18.0
+          - torch-version: 2.4.0
+            torchvision-version: 0.19.0
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -30,8 +32,7 @@ jobs:
       - name: Install internal dependencies
         run: |
           pip install pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-${{ matrix.torch-version}}+cpu.html
-          pip install dgl -f https://data.dgl.ai/wheels/torch-2.3/repo.html
-          echo "{DGLBACKEND}={pytorch}" >> $GITHUB_ENV
+          if [ ${{ matrix.torch-version}} == 2.3.0 ]; then pip install dgl -f https://data.dgl.ai/wheels/torch-2.3/repo.html; fi
       - name: Install main package
         run: |
           pip install -e .
