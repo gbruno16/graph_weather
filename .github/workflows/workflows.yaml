@@ -33,6 +33,7 @@ jobs:
         run: |
           pip install pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-${{ matrix.torch-version}}+cpu.html
           if [ ${{ matrix.torch-version}} == 2.3.0 ]; then pip install dgl -f https://data.dgl.ai/wheels/torch-2.3/repo.html; fi
+          if [ ${{ matrix.torch-version}} == 2.3.0 ]; then python3 -c "import dgl"; fi
       - name: Install main package
         run: |
           pip install -e .
