@@ -2,7 +2,7 @@ import h3
 import numpy as np
 import torch
 from torch_geometric.transforms import TwoHop
-
+from packaging.version import Version
 from graph_weather import GraphWeatherAssimilator, GraphWeatherForecaster
 from graph_weather.models import (
     AssimilatorDecoder,
@@ -465,7 +465,7 @@ def test_gencast_sampler():
     assert not torch.isnan(preds).any()
     assert preds.shape == (1, len(grid_lon), len(grid_lat), output_features_dim)
 
-@pytest.mark.skipif(torch.__version__ != (2,3), reason="dgl tests for experimental features only runs with torch 2.3.0")
+@pytest.mark.skipif(Version(torch.__version__).release != Version("2.3.0").release, reason="dgl tests for experimental features only runs with torch 2.3.0")
 def test_gencast_full(): 
     # download weights from HF
     denoiser=Denoiser.from_pretrained("openclimatefix/gencast-128x64", 
